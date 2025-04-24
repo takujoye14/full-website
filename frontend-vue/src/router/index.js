@@ -4,7 +4,11 @@ import Login from '../pages/Login.vue'
 import Signup from '../pages/Signup.vue'
 import Products from '../pages/Products.vue'
 import NotFound from '../pages/NotFound.vue'
-import store from '../store' // <-- correct
+import Cart from '../pages/Cart.vue'
+import store from '../store' 
+import AddProduct from '../pages/AddProduct.vue'
+import Purchase from '../pages/Purchase.vue'
+
 
 const routes = [
   { path: '/', component: Home },
@@ -15,8 +19,18 @@ const routes = [
     component: Products,
     meta: { requiresAuth: true }
   },
-  { path: '/:catchAll(.*)', component: NotFound }
+  { path: '/add-product', component: AddProduct, meta: { requiresAuth: true } },
+  {path: '/cart',component: Cart,meta: { requiresAuth: true }},
+  { path: '/purchase', component: Purchase },
+  { path: '/:catchAll(.*)', component: NotFound },
+  {
+    path: '/edit/:id',
+    component: () => import('../pages/EditProduct.vue'),
+    meta: { requiresAuth: true }
+  }
+  
 ]
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -30,6 +44,7 @@ router.beforeEach((to, from, next) => {
   } else {
     next()
   }
+
 })
 
 export default router

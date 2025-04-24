@@ -1,13 +1,24 @@
 <template>
   <header class="site-header">
     <nav class="nav-bar">
-      <router-link to="/" class="nav-left">Home</router-link>
-
+      <router-link to="/" class="nav-left">
+        <img :src="logo" alt="Home" class="logo" />
+      </router-link>
 
       <div class="nav-right">
         <router-link v-if="!isLoggedIn" to="/login">Login</router-link>
         <router-link v-if="!isLoggedIn" to="/signup">Sign Up</router-link>
         <router-link v-if="isLoggedIn" to="/products">Products</router-link>
+
+        <router-link v-if="isLoggedIn" to="/cart" class="animated-buy-button">
+          <svg viewBox="0 0 16 16" class="bi bi-cart-check" height="24" width="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
+            <path d="M11.354 6.354a.5.5 0 0 0-.708-.708L8 8.293 6.854 7.146a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"></path>
+            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+          </svg>
+          <span class="text">View Cart</span>
+          <span class="cart-badge" v-if="cartCount > 0">{{ cartCount }}</span>
+        </router-link>
+
 
         <button
           v-if="isLoggedIn"
@@ -15,7 +26,6 @@
           id="logoutButton"
           class="logout-btn"
         >
-          
           <div class="logout-sign">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
               <path
@@ -27,29 +37,88 @@
         </button>
       </div>
     </nav>
+
+    <transition name="fade">
+      <div v-if="showPopup" class="popup">Item successfully added to cart!</div>
+    </transition>
   </header>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import logo from '../assets/thevault icon.png'
+import { ref, watchEffect, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { onMounted, onBeforeUnmount } from 'vue'
+
 
 const store = useStore()
 const router = useRouter()
-
 const isLoggedIn = computed(() => store.getters.isLoggedIn)
+const cartCount = ref(0)
+const showPopup = ref(false)
 
 function handleLogout() {
   store.dispatch('logout')
   router.push('/login')
 }
 
+watchEffect(() => {
+  const token = localStorage.getItem("token")
+  if (!token) {
+    cartCount.value = 0
+    return
+  }
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const userId = payload.userId
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || []
+    cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
+  } catch (err) {
+    cartCount.value = 0
+  }
+})
+
+
+window.addEventListener('cart-updated', () => {
+  const cart = JSON.parse(localStorage.getItem("shoppingCart")) || []
+  cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
+
+  showPopup.value = true
+  setTimeout(() => showPopup.value = false, 2000)
+})
+
+onMounted(() => {
+  updateCartCount()
+
+  window.addEventListener('cart-updated', updateCartCount)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('cart-updated', updateCartCount)
+})
+
+function updateCartCount() {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) return cartCount.value = 0
+
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const userId = payload.userId
+    const key = `cart_${userId}`
+    const cart = JSON.parse(localStorage.getItem(key)) || []
+    cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
+  } catch {
+    cartCount.value = 0
+  }
+}
+
 </script>
 
 <style scoped>
 .site-header {
-  background-color: #333;
+  background-color: rgba(125, 123, 123, 0.62);
   padding: 1rem 2rem;
   color: white;
 }
@@ -73,70 +142,176 @@ function handleLogout() {
   gap: 1rem;
 }
 
+.logo {
+  height: 60px;
+  width: 70px;
+}
+
+.cart-link {
+  position: relative;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+}
+
+.cart-count {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: red;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* Logout Button Animation */
 .logout-btn {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 45px;
-    height: 45px;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition-duration: 0.3s;
-    background-color:rgb(51, 51, 51); 
-    
-  }
-  
-  .logout-sign {
-    width: 100%;
-    transition-duration: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .logout-sign svg {
-    width: 17px;
-  }
-  
-  .logout-sign svg path {
-    fill: white;
-  }
-  
-  .logout-text {
-    position: absolute;
-    right: 0%;
-    width: 0%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition-duration: 0.3s;
+  background-color: rgb(0, 0, 0);
+}
+
+.logout-sign {
+  width: 100%;
+  transition-duration: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-sign svg {
+  width: 17px;
+}
+
+.logout-sign svg path {
+  fill: white;
+}
+
+.logout-text {
+  position: absolute;
+  right: 0%;
+  width: 0%;
+  opacity: 0;
+  color: white;
+  font-size: 1.2em;
+  font-weight: 600;
+  transition-duration: 0.3s;
+}
+
+.logout-btn:hover {
+  width: 125px;
+  border-radius: 40px;
+  transition-duration: 0.3s;
+}
+
+.logout-btn:hover .logout-sign {
+  width: 30%;
+  padding-left: 10px;
+}
+
+.logout-btn:hover .logout-text {
+  opacity: 1;
+  width: 70%;
+  padding-right: 10px;
+}
+
+.logout-btn:active {
+  transform: translate(2px, 2px);
+}
+
+/* Popup Notification */
+.popup {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  background-color: #333;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  font-weight: bold;
+  animation: slide-down 0.5s ease;
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-10px);
     opacity: 0;
-    color: white;
-    font-size: 1.2em;
-    font-weight: 600;
-    transition-duration: 0.3s;
   }
-  
-  .logout-btn:hover {
-    width: 125px;
-    border-radius: 40px;
-    transition-duration: 0.3s;
-  }
-  
-  .logout-btn:hover .logout-sign {
-    width: 30%;
-    transition-duration: 0.3s;
-    padding-left: 10px;
-  }
-  
-  .logout-btn:hover .logout-text {
+  to {
+    transform: translateY(0);
     opacity: 1;
-    width: 70%;
-    transition-duration: 0.3s;
-    padding-right: 10px;
   }
-  
-  .logout-btn:active {
-    transform: translate(2px, 2px);
-  }
-  
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.animated-buy-button {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 15px;
+  gap: 15px;
+  background-color: #181717;
+  outline: 3px #181717 solid;
+  outline-offset: -3px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: 400ms;
+  text-decoration: none;
+}
+
+.animated-buy-button .text {
+  color: white;
+  font-weight: 700;
+  font-size: 1em;
+  transition: 400ms;
+}
+
+.animated-buy-button svg path {
+  transition: 400ms;
+}
+
+.animated-buy-button:hover {
+  background-color: transparent;
+}
+
+.animated-buy-button:hover .text {
+  color: #181717;
+}
+
+.animated-buy-button:hover svg path {
+  fill: #181717;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: red;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
 </style>
