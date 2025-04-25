@@ -13,15 +13,24 @@
     <p v-if="success" class="success">{{ success }}</p>
     <p v-if="error" class="error">{{ error }}</p>
 
-    <!-- Custom Delete Button with Confirm Popup -->
+    <!-- Delete Button Section -->
     <div class="delete-section">
-      <button class="delete-button" @click="showConfirm = true">
-        <span class="text">Delete</span>
-        <span class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path
-              d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"
-            />
+      <button class="button" type="button" @click="showConfirm = true">
+        <span class="button__text">Delete</span>
+        <span class="button__icon">
+          <svg class="svg" height="512" viewBox="0 0 512 512" width="512" xmlns="http://www.w3.org/2000/svg">
+            <path d="M112,112l20,320c.95,18.49,14.4,32,32,32H348c17.67,0,30.87-13.51,32-32l20-320" 
+              style="fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/>
+            <line x1="80" x2="432" y1="112" y2="112" 
+              style="stroke:#fff;stroke-linecap:round;stroke-miterlimit:10;stroke-width:32px"/>
+            <path d="M192,112V72h0a23.93,23.93,0,0,1,24-24h80a23.93,23.93,0,0,1,24,24h0v40" 
+              style="fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/>
+            <line x1="256" x2="256" y1="176" y2="400" 
+              style="fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/>
+            <line x1="184" x2="192" y1="176" y2="400" 
+              style="fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/>
+            <line x1="328" x2="320" y1="176" y2="400" 
+              style="fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:32px"/>
           </svg>
         </span>
       </button>
@@ -123,14 +132,26 @@ const deleteProduct = async () => {
 <style scoped>
 .edit-product {
   max-width: 500px;
-  margin: 2rem auto;
+  margin: 4rem auto;
   padding: 2rem;
   color: white;
   backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 input,
 textarea,
-button {
+button[type="submit"] {
   width: 100%;
   margin: 1rem 0;
   padding: 0.75rem;
@@ -138,108 +159,127 @@ button {
   border-radius: 6px;
   border: none;
 }
-button {
+
+button[type="submit"] {
   background: #1f1f1f;
   color: white;
   font-weight: bold;
   cursor: pointer;
 }
-button:hover {
+
+button[type="submit"]:hover {
   background: black;
 }
+
 .success {
   color: limegreen;
-}
-.error {
-  color: red;
-}
-.delete-section {
-  margin-top: 2rem;
-  text-align: center;
+  margin-top: 1rem;
 }
 
-/* New custom red delete button */
-.delete-button {
+.error {
+  color: red;
+  margin-top: 1rem;
+}
+
+.delete-section {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 🗑️ Trash-can delete button */
+.button {
+  position: relative;
   width: 150px;
-  height: 50px;
+  height: 40px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  background: #e62222;
-  border: none;
-  border-radius: 5px;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.15);
-  margin: 1rem auto 0;
-  justify-content: center;
-  position: relative;
+  border: 1px solid #cc0000;
+  background-color: #e50000;
+  overflow: hidden;
 }
-.delete-button .text {
+
+.button, .button__icon, .button__text {
+  transition: all 0.3s;
+}
+
+.button .button__text {
   transform: translateX(35px);
-  color: white;
-  font-weight: bold;
-  transition: 200ms;
+  color: #fff;
+  font-weight: 600;
 }
-.delete-button .icon {
+
+.button .button__icon {
   position: absolute;
-  border-left: 1px solid #c41b1b;
-  transform: translateX(110px);
-  height: 40px;
-  width: 40px;
+  transform: translateX(109px);
+  height: 100%;
+  width: 39px;
+  background-color: #cc0000;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 200ms;
-}
-.delete-button svg {
-  width: 15px;
-  fill: #eee;
-}
-.delete-button:hover {
-  background: #ff3636;
-}
-.delete-button:hover .text {
-  color: transparent;
-}
-.delete-button:hover .icon {
-  width: 150px;
-  border-left: none;
-  transform: translateX(0);
-}
-.delete-button:focus {
-  outline: none;
-}
-.delete-button:active .icon svg {
-  transform: scale(0.8);
 }
 
+.button .svg {
+  width: 20px;
+}
+
+.button:hover {
+  background: #cc0000;
+}
+
+.button:hover .button__text {
+  color: transparent;
+}
+
+.button:hover .button__icon {
+  width: 148px;
+  transform: translateX(0);
+}
+
+.button:active .button__icon {
+  background-color: #b20000;
+}
+
+.button:active {
+  border: 1px solid #b20000;
+}
+
+/* Confirm Popup */
 .confirm-popup {
   background: #222;
   color: white;
   padding: 1rem;
   border-radius: 8px;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
   box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  text-align: center;
 }
+
 .confirm-popup .actions {
   display: flex;
   justify-content: space-around;
   margin-top: 1rem;
 }
+
 .confirm-popup .confirm {
   background: red;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  border-radius: 6px;
 }
+
 .confirm-popup .cancel {
   background: gray;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   cursor: pointer;
+  border-radius: 6px;
 }
 </style>

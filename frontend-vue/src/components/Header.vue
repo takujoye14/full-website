@@ -8,7 +8,10 @@
       <div class="nav-right">
         <router-link v-if="!isLoggedIn" to="/login">Login</router-link>
         <router-link v-if="!isLoggedIn" to="/signup">Sign Up</router-link>
-        <router-link v-if="isLoggedIn" to="/products">Products</router-link>
+        <router-link v-if="isLoggedIn" to="/products" class="products-button glitch-btn">Products</router-link>
+        <router-link v-if="isLoggedIn" to="/purchase" class="invoices-button">My Invoices</router-link>
+
+
 
         <router-link v-if="isLoggedIn" to="/cart" class="animated-buy-button">
           <svg viewBox="0 0 16 16" class="bi bi-cart-check" height="24" width="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
@@ -118,7 +121,7 @@ function updateCartCount() {
 
 <style scoped>
 .site-header {
-  background-color: rgba(125, 123, 123, 0.62);
+  background-color: rgba(0, 0, 0, 0.62);
   padding: 1rem 2rem;
   color: white;
 }
@@ -314,4 +317,56 @@ function updateCartCount() {
   padding: 2px 6px;
   border-radius: 50%;
 }
+/* From Uiverse.io by mahiatlinux */ 
+/* Dark Mode 3D Button */
+products-button {
+  font: inherit;
+  background-color: #2a2a2a;
+  border: 0;
+  color: #e0e0e0;
+  border-radius: 0.5em;
+  font-size: 1.35rem;
+  padding: 0.375em 1em;
+  font-weight: 600;
+  text-shadow: 0 0.0625em 0 #000;
+  box-shadow:
+    inset 0 0.0625em 0 0 #3a3a3a,
+    0 0.0625em 0 0 #252525,
+    0 0.125em 0 0 #202020,
+    0 0.25em 0 0 #1c1c1c,
+    0 0.3125em 0 0 #181818,
+    0 0.375em 0 0 #141414,
+    0 0.425em 0 0 #101010,
+    0 0.425em 0.5em 0 #0a0a0a;
+  transition: 0.15s ease;
+  cursor: pointer;
+}
+
+products-button:active {
+  translate: 0 0.225em;
+  box-shadow:
+    inset 0 0.03em 0 0 #3a3a3a,
+    0 0.03em 0 0 #252525,
+    0 0.0625em 0 0 #202020,
+    0 0.125em 0 0 #1c1c1c,
+    0 0.125em 0 0 #181818,
+    0 0.2em 0 0 #141414,
+    0 0.225em 0 0 #101010,
+    0 0.225em 0.375em 0 #0a0a0a;
+}
+.invoices-button {
+  background-color: #fac921;
+  color: black;
+  font-weight: bold;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.invoices-button:hover {
+  background-color: #ffe761;
+}
+
+
 </style>

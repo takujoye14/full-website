@@ -20,7 +20,8 @@
         <div class="item-total">Total: {{ item.price * item.quantity }}€</div>
       </div>
 
-      <div :data-tooltip="`Total: ${cartTotal}€`" class="button" @click="goToPurchase">
+      <!-- Buy Now -->
+      <div :data-tooltip="`Total: ${cartTotal}€`" class="button" @click="buyNow">
         <div class="button-wrapper">
           <div class="text">Buy Now</div>
           <span class="icon">
@@ -67,13 +68,11 @@ const decreaseQuantity = (item) => {
 const removeItem = (id) => {
   cart.value = cart.value.filter(item => item._id !== id)
   updateCart(cart.value)
-  window.dispatchEvent(new CustomEvent('cart-updated'))
 }
 
 const clearCart = () => {
   clearCartStorage()
   cart.value = []
-  window.dispatchEvent(new CustomEvent('cart-updated'))
 }
 
 const cartTotal = computed(() => {
@@ -85,10 +84,41 @@ const getImageUrl = (path) => {
   return path.startsWith('http') ? path : `http://localhost:3000${path}`
 }
 
-const goToPurchase = () => {
-  router.push('/purchase')
+const buyNow = async () => {
+  const token = localStorage.getItem('token')
+  const userId = JSON.parse(atob(token.split('.')[1])).userId
+
+  const products = cart.value.map(item => ({
+    productName: item.productName,
+    quantity: item.quantity
+  }))
+
+  const totalprice = cartTotal.value
+
+  try {
+    const res = await fetch('http://localhost:3000/api/invoices/addInvoice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ products, totalprice })
+    })
+
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.message || 'Failed to create invoice')
+
+    alert('✅ Invoice created successfully!')
+    clearCartStorage()
+    cart.value = []
+    window.dispatchEvent(new Event('cart-updated'))
+    router.push('/purchase')
+  } catch (err) {
+    alert('❌ ' + err.message)
+  }
 }
 </script>
+
 
 <style scoped>
 .cart-page {
@@ -101,7 +131,13 @@ const goToPurchase = () => {
 .empty {
   margin-top: 2rem;
   font-size: 1.2rem;
-  color: #ccc;
+  color: #hhh;
+  background: rgba(0, 0, 0, 0.68);  
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00000055;
+  max-width: 160px;
+  margin: 0 auto;
 }
 
 .cart-list {

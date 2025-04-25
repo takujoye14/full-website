@@ -8,6 +8,8 @@ import Cart from '../pages/Cart.vue'
 import store from '../store' 
 import AddProduct from '../pages/AddProduct.vue'
 import Purchase from '../pages/Purchase.vue'
+import LoginLoader from '../components/LoginLoader.vue'
+
 
 
 const routes = [
@@ -26,6 +28,11 @@ const routes = [
   {
     path: '/edit/:id',
     component: () => import('../pages/EditProduct.vue'),
+    meta: { requiresAuth: true }
+  }  ,
+  {
+    path: '/LoginLoader',
+    component: LoginLoader,
     meta: { requiresAuth: true }
   }
   

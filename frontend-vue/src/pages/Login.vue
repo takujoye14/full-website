@@ -29,7 +29,6 @@
     </div>
   </form>
 </template>
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -57,12 +56,11 @@ const handleLogin = async () => {
     const data = await res.json()
     if (!res.ok) throw new Error(data)
 
-    await store.dispatch('login', data) // Await ensures Vuex state updates
+    await store.dispatch('login', data)
     success.value = 'Login successful! Redirecting...'
 
-    setTimeout(() => {
-      router.push('/products')
-    }, 500)
+    localStorage.setItem('justLoggedIn', 'true')
+    router.push('/LoginLoader')
   } catch (err) {
     error.value = err.message || 'Login failed'
   }

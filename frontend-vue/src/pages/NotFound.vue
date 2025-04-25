@@ -1,3 +1,5 @@
+
+
 <style scoped>
   /* Design Inspired by one of Stefan Devai's Design on Dribble */
 
@@ -5,8 +7,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 30em;
-    height: 30em;
+    width: 105em;
+    height: 50em;
+
   }
 
   .main {
