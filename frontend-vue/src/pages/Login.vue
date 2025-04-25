@@ -42,12 +42,14 @@ const password = ref('')
 const error = ref('')
 const success = ref('')
 
+const API_BASE = import.meta.env.VITE_API_URL
+
 const handleLogin = async () => {
   error.value = ''
   success.value = ''
 
   try {
-    const res = await fetch('http://localhost:3000/api/users/login', {
+    const res = await fetch(`${API_BASE}/api/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value })
@@ -66,6 +68,7 @@ const handleLogin = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .form {
