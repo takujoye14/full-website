@@ -48,7 +48,7 @@ const invoices = ref([])
 onMounted(async () => {
   const token = localStorage.getItem('token')
   try {
-    const res = await fetch('http://localhost:3000/api/invoices/myInvoices', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/invoices/myInvoices`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     const data = await res.json()
