@@ -31,6 +31,8 @@
 <script setup>
 import { ref } from 'vue'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+
 const firstName = ref('')
 const lastName = ref('')
 const email = ref('')
@@ -49,7 +51,7 @@ const handleSignup = async () => {
   }
 
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/signup`, {
+    const res = await fetch(`${API_BASE}/api/users/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -62,8 +64,9 @@ const handleSignup = async () => {
       })
     })
 
+    const data = await res.json()
+
     if (!res.ok) {
-      const data = await res.json()
       throw new Error(data.message || 'Signup failed')
     }
 
@@ -79,7 +82,6 @@ const handleSignup = async () => {
 }
 </script>
 
-<style scoped>
 .form {
   display: flex;
   flex-direction: column;
