@@ -51,17 +51,19 @@ const handleSignup = async () => {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/api/users/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firstName: firstName.value,
-        lastName: lastName.value,
-        email: email.value,
-        imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName.value + ' ' + lastName.value)}`,
-        role: 'user',
-        password: password.value
-      })
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName.value + ' ' + lastName.value)}`,
+      role: 'user',
+      password: password.value
+    })
+  })
+
     })
 
     const data = await res.json()
