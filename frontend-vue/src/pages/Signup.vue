@@ -82,6 +82,8 @@ const handleSignup = async () => {
 }
 </script>
 
+<style scoped>
+
 .form {
   display: flex;
   flex-direction: column;
