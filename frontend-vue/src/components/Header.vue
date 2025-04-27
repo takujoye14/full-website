@@ -2,7 +2,7 @@
   <header class="site-header">
     <nav class="nav-bar">
       <router-link to="/" class="nav-left">
-        <img :src="logo" alt="Home" class="logo" />
+        <img src="/thevault-icon.png" alt="Home" class="logo" />
       </router-link>
 
       <div class="nav-right">
@@ -10,8 +10,6 @@
         <router-link v-if="!isLoggedIn" to="/signup">Sign Up</router-link>
         <router-link v-if="isLoggedIn" to="/products" class="products-button glitch-btn">Products</router-link>
         <router-link v-if="isLoggedIn" to="/purchase" class="invoices-button">My Invoices</router-link>
-
-
 
         <router-link v-if="isLoggedIn" to="/cart" class="animated-buy-button">
           <svg viewBox="0 0 16 16" class="bi bi-cart-check" height="24" width="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
@@ -21,7 +19,6 @@
           <span class="text">View Cart</span>
           <span class="cart-badge" v-if="cartCount > 0">{{ cartCount }}</span>
         </router-link>
-
 
         <button
           v-if="isLoggedIn"
@@ -48,12 +45,9 @@
 </template>
 
 <script setup>
-import logo from '../assets/thevault-icon.png'
-import { ref, watchEffect, computed } from 'vue'
+import { ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { onMounted, onBeforeUnmount } from 'vue'
-
 
 const store = useStore()
 const router = useRouter()
@@ -65,42 +59,6 @@ function handleLogout() {
   store.dispatch('logout')
   router.push('/login')
 }
-
-watchEffect(() => {
-  const token = localStorage.getItem("token")
-  if (!token) {
-    cartCount.value = 0
-    return
-  }
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    const userId = payload.userId
-    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || []
-    cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
-  } catch (err) {
-    cartCount.value = 0
-  }
-})
-
-
-window.addEventListener('cart-updated', () => {
-  const cart = JSON.parse(localStorage.getItem("shoppingCart")) || []
-  cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
-
-  showPopup.value = true
-  setTimeout(() => showPopup.value = false, 2000)
-})
-
-onMounted(() => {
-  updateCartCount()
-
-  window.addEventListener('cart-updated', updateCartCount)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('cart-updated', updateCartCount)
-})
 
 function updateCartCount() {
   try {
@@ -117,7 +75,42 @@ function updateCartCount() {
   }
 }
 
+watchEffect(() => {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    cartCount.value = 0
+    return
+  }
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const userId = payload.userId
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || []
+    cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
+  } catch (err) {
+    cartCount.value = 0
+  }
+})
+
+onMounted(() => {
+  updateCartCount()
+  window.addEventListener('cart-updated', updateCartCount)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('cart-updated', updateCartCount)
+})
+
+window.addEventListener('cart-updated', () => {
+  const cart = JSON.parse(localStorage.getItem("shoppingCart")) || []
+  cartCount.value = cart.reduce((total, item) => total + item.quantity, 0)
+
+  showPopup.value = true
+  setTimeout(() => showPopup.value = false, 2000)
+})
 </script>
+
+
 
 <style scoped>
 .site-header {
