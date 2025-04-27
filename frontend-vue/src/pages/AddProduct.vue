@@ -49,7 +49,7 @@ const submitProduct = async () => {
 
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/addProduct`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/addProducts`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`
