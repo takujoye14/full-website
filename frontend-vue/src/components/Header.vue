@@ -48,7 +48,7 @@
 </template>
 
 <script setup>
-import logo from '../assets/thevault icon.png'
+import logo from '../assets/thevault-icon.png'
 import { ref, watchEffect, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
