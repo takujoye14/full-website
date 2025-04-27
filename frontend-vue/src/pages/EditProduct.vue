@@ -69,7 +69,7 @@ const handleFileChange = (e) => {
 onMounted(async () => {
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch(`http://localhost:3000/api/products/${productId}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/${productId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     const data = await res.json()
