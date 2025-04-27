@@ -41,30 +41,31 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const success = ref('')
+const errorMessage = ref("")
 
-const handleLogin = async () => {
-  error.value = ''
-  success.value = ''
-
+async function handleLogin() {
   try {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/login`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value })
     })
 
-    const data = await res.json()
-    if (!res.ok) throw new Error(data)
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Login failed");
+    }
 
-    await store.dispatch('login', data)
-    success.value = 'Login successful! Redirecting...'
+    const token = await response.text()
+    localStorage.setItem('token', token)
+    router.push('/products')
 
-    localStorage.setItem('justLoggedIn', 'true')
-    router.push('/LoginLoader')
   } catch (err) {
-    error.value = err.message || 'Login failed'
+    console.error(err)
+    errorMessage.value = err.message || "Login failed"
   }
 }
+
 </script>
 
 <style scoped>
