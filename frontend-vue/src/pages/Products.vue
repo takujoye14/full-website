@@ -77,8 +77,9 @@ function isLoggedIn() {
 }
 
 function getImageUrl(path) {
-  if (!path) return ''
-  return path.startsWith('http') ? path : `${import.meta.env.VITE_API_BASE_URL}${path}`
+  if (!path) return '';
+  const cleanPath = path.replace('http://localhost:3000', '');
+  return `${import.meta.env.VITE_API_BASE_URL}${cleanPath}`;
 }
 
 
