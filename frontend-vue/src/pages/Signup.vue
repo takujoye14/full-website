@@ -49,7 +49,7 @@ const handleSignup = async () => {
   }
 
   try {
-    const res = await fetch('http://localhost:3000/api/users/signup', {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -62,24 +62,24 @@ const handleSignup = async () => {
       })
     })
 
-    if (!res.ok) {
-      const data = await res.json()
-      throw new Error(data.message || 'Signup failed')
-    }
+    const data = await res.json()
 
-    success.value = 'Account created! You can now log in.'
+    if (!res.ok) throw new Error(data.message || 'Signup failed')
+
+    success.value = '✅ Account created! You can now log in.'
     firstName.value = ''
     lastName.value = ''
     email.value = ''
     password.value = ''
     confirmPassword.value = ''
   } catch (err) {
-    error.value = err.message
+    error.value = err.message || 'Signup failed'
   }
 }
 </script>
 
 <style scoped>
+/* Keep all your CSS (your style was fine) */
 .form {
   display: flex;
   flex-direction: column;
