@@ -1,7 +1,8 @@
 export const fetchProducts = async () => {
     const token = localStorage.getItem('token')
   
-    const response = await fetch('http://localhost:3000/api/products/allproducts', {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products/allproducts`, {
+
       headers: {
         Authorization: `Bearer ${token}`
       }

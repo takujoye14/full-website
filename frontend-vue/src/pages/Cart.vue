@@ -81,7 +81,7 @@ const cartTotal = computed(() => {
 
 const getImageUrl = (path) => {
   if (!path) return ''
-  return path.startsWith('http') ? path : `http://localhost:3000${path}`
+  return path.startsWith('http') ? path : `${import.meta.env.VITE_API_BASE_URL}${path}`
 }
 
 const buyNow = async () => {
@@ -96,7 +96,7 @@ const buyNow = async () => {
   const totalprice = cartTotal.value
 
   try {
-    const res = await fetch('http://localhost:3000/api/invoices/addInvoice', {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/invoices/addInvoice`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -78,8 +78,9 @@ function isLoggedIn() {
 
 function getImageUrl(path) {
   if (!path) return ''
-  return path.startsWith('http') ? path : `http://localhost:3000${path}`
+  return path.startsWith('http') ? path : `${import.meta.env.VITE_API_BASE_URL}${path}`
 }
+
 
 function nextImage(index, length) {
   activeImageIndex.value[index] = (activeImageIndex.value[index] + 1 || 1) % length
