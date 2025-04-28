@@ -1,24 +1,24 @@
 <template>
   <form class="form" @submit.prevent="handleSignup">
-    <p id="heading">Create Account</p>
+    <p id="heading">Sign Up</p>
 
-    <p v-if="success" style="color: green; text-align: center">{{ success }}</p>
-    <p v-if="error" style="color: red; text-align: center">{{ error }}</p>
+    <p v-if="successMessage" style="color: green; text-align: center">{{ successMessage }}</p>
+    <p v-if="errorMessage" style="color: red; text-align: center">{{ errorMessage }}</p>
 
     <div class="field">
-      <input v-model="firstName" type="text" placeholder="First Name" class="input-field" required />
+      <input v-model="firstName" autocomplete="off" placeholder="First Name" class="input-field" type="text" required />
     </div>
+
     <div class="field">
-      <input v-model="lastName" type="text" placeholder="Last Name" class="input-field" required />
+      <input v-model="lastName" autocomplete="off" placeholder="Last Name" class="input-field" type="text" required />
     </div>
+
     <div class="field">
-      <input v-model="email" type="email" placeholder="Email" class="input-field" required />
+      <input v-model="email" autocomplete="off" placeholder="Email" class="input-field" type="email" required />
     </div>
+
     <div class="field">
-      <input v-model="password" type="password" placeholder="Password" class="input-field" required />
-    </div>
-    <div class="field">
-      <input v-model="confirmPassword" type="password" placeholder="Retype Password" class="input-field" required />
+      <input v-model="password" placeholder="Password" class="input-field" type="password" required />
     </div>
 
     <div class="btn">
@@ -37,9 +37,15 @@ const lastName = ref('')
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
+const successMessage = ref('')
 const router = useRouter()
 
 async function handleSignup() {
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  console.log("Trying to signup...");
+
   try {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/signup`, {
       method: 'POST',
@@ -56,22 +62,30 @@ async function handleSignup() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Signup failed");
+      console.error("Signup failed:", errorData.message || "Unknown error");
+      errorMessage.value = errorData.message || "Signup failed";
+      return;
     }
 
-    const token = await response.text()
-    localStorage.setItem('token', token)
-    router.push('/products')
+    const token = await response.text();
+    localStorage.setItem('token', token);
+
+    console.log("Signup successful!");
+    successMessage.value = "Signup successful! Redirecting...";
+
+    setTimeout(() => {
+      router.push('/products');
+    }, 1500);
 
   } catch (err) {
-    console.error(err)
-    errorMessage.value = err.message || "Signup failed"
+    console.error("Error during signup:", err.message || err);
+    errorMessage.value = err.message || "Signup failed";
   }
 }
 </script>
 
 <style scoped>
-/* Keep all your CSS (your style was fine) */
+/* Same style as your Login.vue */
 .form {
   display: flex;
   flex-direction: column;
@@ -102,6 +116,7 @@ async function handleSignup() {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5em;
   border-radius: 25px;
   padding: 0.6em;
   border: none;

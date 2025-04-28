@@ -2,8 +2,8 @@
   <form class="form" @submit.prevent="handleLogin">
     <p id="heading">Login</p>
 
-    <p v-if="success" style="color: green; text-align: center">{{ success }}</p>
-    <p v-if="error" style="color: red; text-align: center">{{ error }}</p>
+    <p v-if="successMessage" style="color: green; text-align: center">{{ successMessage }}</p>
+    <p v-if="errorMessage" style="color: red; text-align: center">{{ errorMessage }}</p>
 
     <div class="field">
       <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
@@ -29,6 +29,7 @@
     </div>
   </form>
 </template>
+
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -36,9 +37,15 @@ import { useRouter } from 'vue-router'
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
+const successMessage = ref('')
 const router = useRouter()
 
 async function handleLogin() {
+  errorMessage.value = ''
+  successMessage.value = ''
+  
+  console.log("Trying to login...");
+
   try {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/login`, {
       method: 'POST',
@@ -51,19 +58,28 @@ async function handleLogin() {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Login failed");
+      console.error("Login failed:", errorData.message || "Unknown error");
+      errorMessage.value = errorData.message || "Login failed";
+      return;
     }
 
-    const token = await response.text()
-    localStorage.setItem('token', token)
-    router.push('/products')
+    const token = await response.text();
+    localStorage.setItem('token', token);
+    
+    console.log("Login successful!");
+    successMessage.value = "Login successful! Redirecting...";
+
+    setTimeout(() => {
+      router.push('/products');
+    }, 1500);
 
   } catch (err) {
-    console.error(err)
-    errorMessage.value = err.message || "Login failed"
+    console.error("Error during login:", err.message || err);
+    errorMessage.value = err.message || "Login failed";
   }
 }
 </script>
+
 
 <style scoped>
 .form {
