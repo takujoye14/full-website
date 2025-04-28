@@ -33,12 +33,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
 const router = useRouter()
+const store = useStore()
 
 async function handleLogin() {
   errorMessage.value = ''
@@ -64,11 +66,13 @@ async function handleLogin() {
     }
 
     const token = await response.text();
-    localStorage.setItem('token', token);
 
     console.log("Login successful!");
     successMessage.value = "Login successful! Redirecting...";
 
+    await store.dispatch('login', token);
+
+    console.log("Pushing to LoginLoader...");
     router.push('/LoginLoader');
 
   } catch (err) {
@@ -76,7 +80,6 @@ async function handleLogin() {
     errorMessage.value = err.message || "Login failed";
   }
 }
-
 
 </script>
 
