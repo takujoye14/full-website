@@ -1,19 +1,17 @@
 <template>
   <div class="purchase-container">
-    <div v-if="invoices.length === 0" class="no-invoice">
+    <div v-if="loading" class="no-invoice">Loading purchases...</div>
+
+    <div v-else-if="invoices.length === 0" class="no-invoice">
       No purchases found.
     </div>
 
-    <div
-      v-for="invoice in invoices"
-      :key="invoice._id"
-      class="receipt"
-    >
+    <div v-else v-for="invoice in invoices" :key="invoice._id" class="receipt">
       <h2>RECEIPT</h2>
       <hr />
 
       <div class="line" v-for="(item, i) in invoice.products" :key="i">
-        <span class="product">{{ item.productName}}</span>
+        <span class="product">{{ item.productName }}</span>
         <span class="dots"></span>
         <span>x{{ item.quantity }}</span>
       </div>
@@ -42,20 +40,36 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const invoices = ref([])
+const loading = ref(true)
+const router = useRouter()
 
 onMounted(async () => {
   const token = localStorage.getItem('token')
+
+  if (!token) {
+    console.error('No token found, redirecting to login.');
+    router.push('/login')
+    return;
+  }
+
   try {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/invoices/myInvoices`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     })
     const data = await res.json()
     if (!res.ok) throw new Error(data.message || 'Failed to fetch invoices')
     invoices.value = data.reverse()
   } catch (err) {
-    console.error(err)
+    console.error('Failed to fetch invoices:', err.message)
+    router.push('/login')
+  } finally {
+    loading.value = false
   }
 })
 
@@ -64,6 +78,8 @@ const formatDate = (dateStr) => {
   return d.toLocaleDateString() + ' ' + d.toLocaleTimeString()
 }
 </script>
+
+
 
 <style scoped>
 .purchase-container {

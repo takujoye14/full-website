@@ -74,6 +74,7 @@ async function handleLogin() {
 
     console.log("Pushing to LoginLoader...");
     router.push('/LoginLoader');
+    console.log(token);
 
   } catch (err) {
     console.error("Error during login:", err.message || err);
