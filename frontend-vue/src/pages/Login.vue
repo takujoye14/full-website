@@ -39,10 +39,10 @@ const router = useRouter()
 const store = useStore()
 
 async function handleLogin() {
-  errorMessage.value = ''
-  successMessage.value = ''
-
-  console.log("Trying to login...")
+  errorMessage.value = '';
+  successMessage.value = '';
+  
+  console.log("Trying to login...");
 
   try {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/login`, {
@@ -52,32 +52,32 @@ async function handleLogin() {
         email: email.value,
         password: password.value
       })
-    })
+    });
 
-    const token = await response.text()
-
+    const data = await response.text();
     if (!response.ok) {
-      console.error('Login failed:', token || 'Unknown error')
-      errorMessage.value = token || 'Login failed'
-      return
+      console.error('Login failed:', data || 'Unknown error');
+      errorMessage.value = data || 'Login failed';
+      return;
     }
 
-    console.log('Token received:', token)
-    localStorage.setItem('token', token)
-    await store.dispatch('login', token) // important: await to make sure store updates
-
-    console.log('Login successful!')
-    successMessage.value = 'Login successful! Redirecting...'
+    const token = data.replaceAll('"', ''); // IMPORTANT
+    localStorage.setItem('token', token);
+    store.dispatch('login', token);  
+    console.log('Token received:', token);
+    console.log('Login successful!');
+    successMessage.value = 'Login successful! Redirecting...';
 
     setTimeout(() => {
-      router.push('/loginloader')
-    }, 500)
+      router.push('/loginloader');
+    }, 500);
 
   } catch (err) {
-    console.error('Login error:', err.message || err)
-    errorMessage.value = err.message || 'Login failed'
+    console.error('Login error:', err.message || err);
+    errorMessage.value = err.message || 'Login failed';
   }
 }
+
 </script>
 
 
