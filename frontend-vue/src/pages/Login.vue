@@ -70,8 +70,8 @@ async function handleLogin() {
     successMessage.value = "Login successful! Redirecting...";
 
     setTimeout(() => {
-      router.push('/loginloader');
-    }, 1500);
+      router.push('/Loginloader');
+    }, 1000);
 
   } catch (err) {
     console.error("Error during login:", err.message || err);
