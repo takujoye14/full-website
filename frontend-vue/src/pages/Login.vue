@@ -70,7 +70,7 @@ async function handleLogin() {
     successMessage.value = "Login successful! Redirecting...";
 
     setTimeout(() => {
-      router.push('/products');
+      router.push('/loginloader');
     }, 1500);
 
   } catch (err) {
@@ -78,6 +78,7 @@ async function handleLogin() {
     errorMessage.value = err.message || "Login failed";
   }
 }
+
 </script>
 
 
