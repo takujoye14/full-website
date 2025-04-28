@@ -43,7 +43,7 @@ const router = useRouter()
 async function handleLogin() {
   errorMessage.value = ''
   successMessage.value = ''
-  
+
   console.log("Trying to login...");
 
   try {
@@ -65,19 +65,18 @@ async function handleLogin() {
 
     const token = await response.text();
     localStorage.setItem('token', token);
-    
+
     console.log("Login successful!");
     successMessage.value = "Login successful! Redirecting...";
 
-    setTimeout(() => {
-      router.push('/Loginloader');
-    }, 1000);
+    router.push('/LoginLoader');
 
   } catch (err) {
     console.error("Error during login:", err.message || err);
     errorMessage.value = err.message || "Login failed";
   }
 }
+
 
 </script>
 
