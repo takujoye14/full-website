@@ -30,50 +30,42 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const firstName = ref('')
 const lastName = ref('')
 const email = ref('')
 const password = ref('')
-const confirmPassword = ref('')
-const error = ref('')
-const success = ref('')
+const errorMessage = ref('')
+const router = useRouter()
 
-const handleSignup = async () => {
-  error.value = ''
-  success.value = ''
-
-  if (password.value !== confirmPassword.value) {
-    error.value = 'Passwords do not match'
-    return
-  }
-
+async function handleSignup() {
   try {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/signup`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         firstName: firstName.value,
         lastName: lastName.value,
         email: email.value,
+        password: password.value,
         imageUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(firstName.value + ' ' + lastName.value)}`,
-        role: 'user',
-        password: password.value
+        role: 'user'
       })
     })
 
-    const data = await res.json()
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Signup failed");
+    }
 
-    if (!res.ok) throw new Error(data.message || 'Signup failed')
+    const token = await response.text()
+    localStorage.setItem('token', token)
+    router.push('/products')
 
-    success.value = '✅ Account created! You can now log in.'
-    firstName.value = ''
-    lastName.value = ''
-    email.value = ''
-    password.value = ''
-    confirmPassword.value = ''
   } catch (err) {
-    error.value = err.message || 'Signup failed'
+    console.error(err)
+    errorMessage.value = err.message || "Signup failed"
   }
 }
 </script>
